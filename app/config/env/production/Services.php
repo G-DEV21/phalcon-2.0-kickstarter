@@ -5,8 +5,8 @@ use
 	Phalcon\Mvc\Router,
 	Phalcon\Mvc\Dispatcher,
 	Phalcon\Events\Manager as EventsManager,
-	Phalcon\Mvc\Request,
-	Phalcon\Mvc\Response,
+	Phalcon\Http\Request,
+	Phalcon\Http\Response,
 	Phalcon\Mvc\View,
 	Phalcon\Mvc\Model\Metadata\Memory as MemoryMetaData,
 	Phalcon\Mvc\Model\Manager as ModelsManager,
@@ -15,24 +15,47 @@ use
 
 return new Config([
 	'router' => function() {
-		return new Router;
+		$router = new Router;
+
+		$router->add('/', [
+			'controller' => 'Home',
+			'action' => 'index'
+			]);
+
+		$router->add('/:controller', [
+			'controller' => 1,
+			'action' => 'index'
+		]);
+
+		$router->add(
+		    '/:controller/:action/:params',
+		    [
+		        'controller' => 1,
+		        'action'     => 2,
+		        'params'     => 3
+		    ]
+		);
+
+		return $router;
 	},
 	'dispatcher' => function() {
 		$dispatcher = new Dispatcher;
 		$events = new EventsManager;
 
-		$events->attach('dispatch:beforeException', function($event, $dispatcher, $exception) {
+		$events->attach('dispatch:beforeDispatchLoop', function ($event, $dispatcher) {
+			}
+		);
 
+		$events->attach('dispatch:beforeException', function($event, $dispatcher, $exception) {
 				// Handle 404 Exceptions
 				if ($exception instanceof DispatcherException) {
-
 						return false;
 				}
 			}	
 		);
 
-		$dispatcher->setEventManager($events);
-
+		$dispatcher->setEventsManager($events);
+		$dispatcher->setDefaultNamespace('App\Mvc\Controller');
 		return $dispatcher;
 	},
 	'request' => function() {
@@ -43,7 +66,10 @@ return new Config([
 	},
 	'view' => function() {
 		$view = new View;
-		$view->setViewsDir(MVC_PATH . 'views/');
+		$view->setViewsDir(MVC_PATH . 'view' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR)
+			->setLayoutsDir('..' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR)
+			->setPartialsDir('..' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR)
+			->setTemplateBefore('main');
 		return $view;
 	},
 	// 'modelsMetadata' => function() {

@@ -6,6 +6,8 @@ use
 
 return new Config([
 	'Namespaces' => [
+		'App\Mvc\Controller' => MVC_PATH . 'controller' . DIRECTORY_SEPARATOR,
+		'App\Mvc\Model' => MVC_PATH . 'model' . DIRECTORY_SEPARATOR,
 		// "Example\Base"    => "vendor/example/base/",
   		// "Example\Adapter" => "vendor/example/adapter/",
   		// "Example"         => "vendor/example/"

@@ -16,7 +16,10 @@ class Application extends BaseApplication
 
 	public function __construct(Config $config)
 	{
+		$di = new DI;
+		$this->setDI($di);
 		$this->setConfig($config);
+		$this->registerApplicationSettings();
 		$this->registerAutoLoader();
 		$this->registerServices();
 	}
@@ -24,7 +27,7 @@ class Application extends BaseApplication
 	protected function registerAutoLoader()
 	{
 		$config = $this->getConfig();
-		$autoLoad = $this->get(CONFIG_AUTOLOAD)->toArray();
+		$autoLoad = $config->get(CONFIG_AUTOLOAD)->toArray();
 
 		$loader = new Loader();
 		foreach ($autoLoad as $m => $v) {
@@ -39,7 +42,7 @@ class Application extends BaseApplication
 
 	protected function registerServices() 
 	{
-		$di = new DI;
+		$di = $this->getDI();
 
 		$config = $this->getConfig();
 		$services = $config->get(CONFIG_SERVICES)->toArray();
@@ -53,8 +56,21 @@ class Application extends BaseApplication
 
 		$setDI('set', $services);
 		$setDI('setShared', $sharedServices);
-		
+
 		$this->setDI($di);
+	}
+
+	protected function registerApplicationSettings() 
+	{
+		$config = $this->getConfig();
+		$appConfig = $config->get(CONFIG_APPLICATION);
+
+		if ($appConfig->get('debug')) {
+			ini_set('display_errors', 'On');
+			error_reporting(E_ALL);
+		}
+
+		$this->getDI()->setShared('config', $appConfig);
 	}
 
 	protected function setConfig(Config $config)

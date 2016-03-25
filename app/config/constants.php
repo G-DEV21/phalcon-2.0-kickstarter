@@ -11,5 +11,6 @@ const DB_MYSQL_WRITE = 'db_mysql_write';
 const CONFIG_AUTOLOAD = 'auto-load';
 const CONFIG_SERVICES = 'services';
 const CONFIG_SHARED_SERVICES = 'shared-services';
+const CONFIG_APPLICATION = 'application';
  
 ?>
