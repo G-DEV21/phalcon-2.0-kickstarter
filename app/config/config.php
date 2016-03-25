@@ -15,10 +15,10 @@ $servicesConfig = $getConfig('Services.php');
 $sharedServicesConfig = $getConfig('SharedServices.php');
 
 $config = new Config([
-	'auto-load' => $autoLoadConfig,
-	'services' => $servicesConfig,
-	'shared-services' => $sharedServicesConfig,
-	]);
+	CONFIG_AUTOLOAD => $autoLoadConfig,
+	CONFIG_SERVICES => $servicesConfig,
+	CONFIG_SHARED_SERVICES => $sharedServicesConfig,
+]);
 
 unset($autoLoadConfig, $servicesConfig, $sharedServicesConfig);
 

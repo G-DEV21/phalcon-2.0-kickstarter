@@ -16,4 +16,11 @@ if (!defined('APP_ENV')) define('APP_ENV', ENV_PRODUCTION);
 
 $app = require_once(APP_PATH . 'bootstrap.php');
 
+try {
+	$app->handle();
+} catch (\Exception $e) {
+	echo $e->getMessage();
+	echo $e->getTraceAsString();
+}
+
 ?>

@@ -4,11 +4,13 @@ use
 	Phalcon\Config,
 	Phalcon\Mvc\Router,
 	Phalcon\Mvc\Dispatcher,
+	Phalcon\Events\Manager as EventsManager,
 	Phalcon\Mvc\Request,
 	Phalcon\Mvc\Response,
 	Phalcon\Mvc\View,
 	Phalcon\Mvc\Model\Metadata\Memory as MemoryMetaData,
-	Phalcon\Mvc\Model\Manager as ModelsManager
+	Phalcon\Mvc\Model\Manager as ModelsManager,
+	Phalcon\Mvc\Dispatcher\Exception as DispatcherException
 	;
 
 return new Config([
@@ -16,7 +18,22 @@ return new Config([
 		return new Router;
 	},
 	'dispatcher' => function() {
-		return new Dispatcher;
+		$dispatcher = new Dispatcher;
+		$events = new EventsManager;
+
+		$events->attach('dispatch:beforeException', function($event, $dispatcher, $exception) {
+
+				// Handle 404 Exceptions
+				if ($exception instanceof DispatcherException) {
+
+						return false;
+				}
+			}	
+		);
+
+		$dispatcher->setEventManager($events);
+
+		return $dispatcher;
 	},
 	'request' => function() {
 		return new Request;
@@ -29,11 +46,12 @@ return new Config([
 		$view->setViewsDir(MVC_PATH . 'views/');
 		return $view;
 	},
-	'modelsMetadata' => function() {
-		return new MemoryMetaData;
-	},
-	'modelsManager' => function() {
-		return new ModelsManager;
-	}
+	// 'modelsMetadata' => function() {
+	// 	return new MemoryMetaData;
+	// },
+	// 'modelsManager' => function() {
+	// 	return new ModelsManager;
+	// }
 ]);
+
  ?>
